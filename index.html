@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Souffle de l'Insecte — Hinoe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Noto+Serif+JP:wght@300;400;700&family=Cinzel:wght@400;600;700&family=Lato:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:         #0a080f;
+      --bg2:        #100d18;
+      --bg3:        #160f22;
+      --panel:      #1a1228;
+      --panel2:     #201535;
+      --border:     #3d2460;
+      --border2:    #5c3a8a;
+      --accent:     #b06eff;
+      --accent2:    #7c3fcc;
+      --accent3:    #d4a0ff;
+      --teal:       #4ecdc4;
+      --teal2:      #2bb3aa;
+      --gold:       #e0b96a;
+      --gold2:      #c49a40;
+      --red:        #e05555;
+      --green:      #5ec98c;
+      --text:       #e8dff5;
+      --text2:      #c0a8e8;
+      --text3:      #8c70b0;
+      --font-title: 'Cinzel', serif;
+      --font-body:  'Cormorant Garamond', serif;
+      --font-jp:    'Noto Serif JP', serif;
+      --font-ui:    'Lato', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 17px;
+      line-height: 1.8;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── CANVAS PARTICULES ─────────────────────────────────────── */
+    #particles {
+      position: fixed; inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.45;
+    }
+
+    /* ── WRAPPER ───────────────────────────────────────────────── */
+    .wrapper { position: relative; z-index: 1; }
+
+    /* ── HERO ──────────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 3rem 2rem;
+      position: relative;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 40%, rgba(120,60,200,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 20% 80%, rgba(78,205,196,0.08) 0%, transparent 60%);
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b06eff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .hero-butterfly {
+      width: 180px; height: 180px;
+      margin-bottom: 1.5rem;
+      animation: floatButter 6s ease-in-out infinite;
+      filter: drop-shadow(0 0 24px rgba(176,110,255,0.6));
+    }
+
+    @keyframes floatButter {
+      0%,100% { transform: translateY(0) rotate(-2deg); }
+      50%      { transform: translateY(-18px) rotate(2deg); }
+    }
+
+    .hero-jp {
+      font-family: var(--font-jp);
+      font-size: 2.8rem;
+      font-weight: 300;
+      letter-spacing: 0.4em;
+      color: var(--text3);
+      margin-bottom: 0.5rem;
+      opacity: 0; animation: fadeUp 1s 0.3s forwards;
+    }
+
+    .hero-title {
+      font-family: var(--font-title);
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      background: linear-gradient(135deg, var(--accent3) 0%, var(--accent) 40%, var(--teal) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.6rem;
+      opacity: 0; animation: fadeUp 1s 0.5s forwards;
+    }
+
+    .hero-sub {
+      font-family: var(--font-title);
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: var(--gold);
+      letter-spacing: 0.2em;
+      margin-bottom: 2rem;
+      opacity: 0; animation: fadeUp 1s 0.7s forwards;
+    }
+
+    .hero-quote {
+      max-width: 600px;
+      font-style: italic;
+      font-size: 1.15rem;
+      color: var(--text2);
+      border-left: 2px solid var(--accent2);
+      padding-left: 1.2rem;
+      margin: 1.5rem auto;
+      text-align: left;
+      opacity: 0; animation: fadeUp 1s 0.9s forwards;
+    }
+
+    .hero-divider {
+      width: 160px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--teal), transparent);
+      margin: 2rem auto;
+      opacity: 0; animation: fadeUp 1s 1.1s forwards;
+    }
+
+    .hero-scroll {
+      font-family: var(--font-ui);
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-top: 2rem;
+      animation: pulse 3s ease-in-out infinite;
+      opacity: 0; animation: fadeUp 1s 1.3s forwards, pulse 3s 2s ease-in-out infinite;
+    }
+
+    /* ── NAV ───────────────────────────────────────────────────── */
+    .nav-sticky {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,8,15,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1rem;
+    }
+
+    .nav-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; align-items: center;
+      overflow-x: auto; gap: 0;
+      scrollbar-width: none;
+    }
+    .nav-inner::-webkit-scrollbar { display: none; }
+
+    .nav-btn {
+      flex-shrink: 0;
+      background: none; border: none;
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text3);
+      padding: 1rem 1.1rem;
+      cursor: pointer;
+      transition: color 0.25s, border-bottom-color 0.25s;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+    }
+    .nav-btn:hover { color: var(--text2); }
+    .nav-btn.active {
+      color: var(--accent3);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ── MAIN CONTENT ──────────────────────────────────────────── */
+    .content {
+      max-width: 860px; margin: 0 auto;
+      padding: 3rem 2rem 6rem;
+    }
+
+    /* ── SECTIONS ──────────────────────────────────────────────── */
+    .section { display: none; }
+    .section.active { display: block; animation: fadeIn 0.5s ease; }
+
+    @keyframes fadeIn  { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeUp  { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse   { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+    /* ── TYPOGRAPHY ────────────────────────────────────────────── */
+    .section-title {
+      font-family: var(--font-title);
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--accent3);
+      letter-spacing: 0.06em;
+      margin-bottom: 0.3rem;
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .section-title .icon { font-size: 1.6rem; }
+
+    .section-jp {
+      font-family: var(--font-jp);
+      font-size: 0.95rem;
+      color: var(--text3);
+      letter-spacing: 0.3em;
+      margin-bottom: 2rem;
+    }
+
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, var(--accent2), var(--teal2), transparent);
+      margin-bottom: 2.5rem;
+    }
+
+    h2 {
+      font-family: var(--font-title);
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.06em;
+      margin: 2.5rem 0 1rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid rgba(176,110,255,0.2);
+    }
+
+    h3 {
+      font-family: var(--font-body);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--teal);
+      margin: 1.8rem 0 0.6rem;
+    }
+
+    p { margin-bottom: 1rem; color: var(--text); }
+
+    /* ── CARDS ─────────────────────────────────────────────────── */
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.4rem 1.6rem;
+      margin-bottom: 1.2rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .card::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, var(--accent), var(--teal));
+    }
+    .card:hover { border-color: var(--border2); transform: translateX(3px); }
+
+    .card-title {
+      font-family: var(--font-title);
+      font-size: 1rem;
+      color: var(--accent3);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    .card p { font-size: 0.95rem; margin-bottom: 0; color: var(--text2); }
+
+    /* ── RULE LIST ─────────────────────────────────────────────── */
+    .rule-list { list-style: none; }
+    .rule-list li {
+      padding: 0.7rem 0.8rem 0.7rem 2.5rem;
+      margin-bottom: 0.5rem;
+      border-radius: 4px;
+      background: rgba(26,18,40,0.6);
+      border: 1px solid rgba(61,36,96,0.5);
+      position: relative;
+      font-size: 0.97rem;
+      line-height: 1.7;
+    }
+    .rule-list li::before {
+      content: attr(data-icon);
+      position: absolute; left: 0.7rem; top: 0.7rem;
+      font-size: 1rem;
+    }
+
+    .rule-list.danger li { border-color: rgba(224,85,85,0.3); background: rgba(40,15,15,0.5); }
+    .rule-list.success li { border-color: rgba(94,201,140,0.3); background: rgba(10,30,20,0.5); }
+    .rule-list.warning li { border-color: rgba(224,185,106,0.3); background: rgba(30,25,10,0.5); }
+
+    /* ── BADGE ─────────────────────────────────────────────────── */
+    .badge {
+      display: inline-block;
+      font-family: var(--font-ui);
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.2em 0.7em;
+      border-radius: 20px;
+      margin-right: 0.4rem;
+      vertical-align: middle;
+    }
+    .badge-purple { background: rgba(176,110,255,0.15); color: var(--accent3); border: 1px solid var(--accent2); }
+    .badge-teal   { background: rgba(78,205,196,0.12); color: var(--teal); border: 1px solid var(--teal2); }
+    .badge-gold   { background: rgba(224,185,106,0.12); color: var(--gold); border: 1px solid var(--gold2); }
+    .badge-red    { background: rgba(224,85,85,0.12); color: var(--red); border: 1px solid rgba(200,60,60,0.5); }
+    .badge-green  { background: rgba(94,201,140,0.12); color: var(--green); border: 1px solid rgba(70,160,100,0.5); }
+
+    /* ── PLANT GRID ────────────────────────────────────────────── */
+    .plant-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .plant-card {
+      background: var(--panel);
+      border-radius: 8px;
+      padding: 1.2rem;
+      border: 1px solid var(--border);
+      transition: transform 0.25s, border-color 0.25s;
+    }
+    .plant-card:hover { transform: translateY(-3px); border-color: var(--border2); }
+
+    .plant-card.heal { border-top: 3px solid var(--green); }
+    .plant-card.harm { border-top: 3px solid var(--red); }
+    .plant-card.dual { border-top: 3px solid var(--gold); }
+
+    .plant-name {
+      font-family: var(--font-title);
+      font-size: 1rem;
+      color: var(--text);
+      margin-bottom: 0.2rem;
+      font-weight: 600;
+    }
+    .plant-latin {
+      font-style: italic;
+      font-size: 0.8rem;
+      color: var(--text3);
+      margin-bottom: 0.6rem;
+      font-family: var(--font-body);
+    }
+    .plant-desc {
+      font-size: 0.88rem;
+      color: var(--text2);
+      line-height: 1.6;
+      margin: 0;
+    }
+    .plant-use {
+      font-size: 0.78rem;
+      color: var(--text3);
+      margin-top: 0.5rem;
+      font-family: var(--font-ui);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── HIERARCHY TABLE ───────────────────────────────────────── */
+    .hiero-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+      font-size: 0.93rem;
+    }
+    .hiero-table th {
+      font-family: var(--font-ui);
+      font-size: 0.7rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text3);
+      padding: 0.7rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .hiero-table td {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid rgba(61,36,96,0.3);
+      vertical-align: top;
+    }
+    .hiero-table tr:hover td { background: rgba(26,18,40,0.5); }
+    .hiero-table .rank-num {
+      font-family: var(--font-title);
+      font-size: 1.1rem;
+      color: var(--accent);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .hiero-table .rank-title {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      color: var(--text);
+      font-weight: 600;
+    }
+    .hiero-table .rank-cond {
+      font-size: 0.88rem;
+      color: var(--text2);
+      line-height: 1.6;
+    }
+
+    /* ── OATH BOX ──────────────────────────────────────────────── */
+    .oath-box {
+      background: linear-gradient(135deg, rgba(26,18,40,0.95), rgba(20,12,35,0.95));
+      border: 1px solid var(--border2);
+      border-radius: 12px;
+      padding: 2.5rem 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      margin: 2rem 0;
+    }
+    .oath-box::before, .oath-box::after {
+      content: '✦';
+      position: absolute;
+      font-size: 6rem;
+      color: rgba(176,110,255,0.04);
+      font-family: var(--font-title);
+    }
+    .oath-box::before { top: -1rem; left: 1rem; }
+    .oath-box::after { bottom: -1rem; right: 1rem; }
+
+    .oath-box p {
+      font-family: var(--font-body);
+      font-size: 1.15rem;
+      font-style: italic;
+      color: var(--text2);
+      line-height: 2;
+      position: relative; z-index: 1;
+    }
+    .oath-title {
+      font-family: var(--font-title);
+      font-size: 1.2rem;
+      color: var(--accent3);
+      letter-spacing: 0.15em;
+      margin-bottom: 1.5rem;
+      position: relative; z-index: 1;
+    }
+
+    /* ── SOIN TABLE ────────────────────────────────────────────── */
+    .soin-bloc {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 1.2rem;
+      overflow: hidden;
+    }
+    .soin-head {
+      background: var(--panel2);
+      padding: 0.9rem 1.4rem;
+      display: flex; align-items: center; gap: 0.8rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s;
+    }
+    .soin-head:hover { background: rgba(92,58,138,0.3); }
+    .soin-head-title {
+      font-family: var(--font-title);
+      font-size: 1rem;
+      color: var(--text);
+      font-weight: 600;
+      flex: 1;
+    }
+    .soin-head-icon { font-size: 1.2rem; }
+    .soin-toggle {
+      font-size: 0.7rem; color: var(--text3);
+      transition: transform 0.3s;
+    }
+    .soin-body {
+      padding: 1.2rem 1.4rem;
+      display: none;
+      border-top: 1px solid var(--border);
+    }
+    .soin-body.open { display: block; animation: fadeIn 0.3s ease; }
+    .soin-body p { font-size: 0.93rem; color: var(--text2); margin-bottom: 0.6rem; }
+    .soin-body ul { list-style: none; }
+    .soin-body ul li {
+      font-size: 0.92rem; color: var(--text2);
+      padding: 0.3rem 0 0.3rem 1.5rem;
+      position: relative;
+    }
+    .soin-body ul li::before {
+      content: '—';
+      position: absolute; left: 0;
+      color: var(--accent2);
+    }
+
+    /* ── PSYCHO CARDS ──────────────────────────────────────────── */
+    .psycho-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+    .psycho-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      transition: transform 0.25s;
+    }
+    .psycho-card:hover { transform: translateY(-2px); }
+    .psycho-icon { font-size: 2rem; margin-bottom: 0.6rem; }
+    .psycho-name {
+      font-family: var(--font-title);
+      font-size: 0.95rem;
+      color: var(--accent3);
+      margin-bottom: 0.4rem;
+      font-weight: 600;
+    }
+    .psycho-desc {
+      font-size: 0.86rem;
+      color: var(--text2);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* ── FORMES ────────────────────────────────────────────────── */
+    .forme-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 1.2rem;
+      overflow: hidden;
+    }
+    .forme-header {
+      background: linear-gradient(135deg, rgba(92,58,138,0.4), rgba(30,18,50,0.8));
+      padding: 1rem 1.5rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .forme-num {
+      font-family: var(--font-title);
+      font-size: 2rem;
+      color: var(--accent2);
+      font-weight: 700;
+      line-height: 1;
+      min-width: 2rem;
+    }
+    .forme-names { flex: 1; }
+    .forme-fr {
+      font-family: var(--font-title);
+      font-size: 1.1rem;
+      color: var(--text);
+      font-weight: 600;
+    }
+    .forme-jp {
+      font-family: var(--font-jp);
+      font-size: 0.8rem;
+      color: var(--text3);
+      letter-spacing: 0.15em;
+    }
+    .forme-stars { color: var(--gold); font-size: 0.9rem; letter-spacing: 0.1em; }
+    .forme-body {
+      padding: 1.1rem 1.5rem;
+      font-size: 0.94rem;
+      color: var(--text2);
+      line-height: 1.8;
+    }
+
+    /* ── HISTOIRE TIMELINE ─────────────────────────────────────── */
+    .timeline { position: relative; padding-left: 2.5rem; }
+    .timeline::before {
+      content: '';
+      position: absolute; left: 0.7rem; top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(180deg, var(--accent2), var(--teal2), transparent);
+    }
+    .timeline-item { position: relative; margin-bottom: 2rem; }
+    .timeline-item::before {
+      content: attr(data-dot);
+      position: absolute; left: -2.5rem;
+      top: 0.2rem;
+      font-size: 1.1rem;
+    }
+    .timeline-era {
+      font-family: var(--font-title);
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 0.3rem;
+    }
+    .timeline-title {
+      font-family: var(--font-body);
+      font-size: 1.1rem;
+      color: var(--text);
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+    .timeline-text { font-size: 0.94rem; color: var(--text2); line-height: 1.75; }
+
+    /* ── QUOTE ─────────────────────────────────────────────────── */
+    blockquote {
+      border-left: 2px solid var(--accent2);
+      padding: 0.8rem 1.4rem;
+      margin: 1.5rem 0;
+      background: rgba(26,18,40,0.5);
+      border-radius: 0 6px 6px 0;
+    }
+    blockquote p {
+      font-style: italic;
+      color: var(--text2);
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    /* ── FOOTER ────────────────────────────────────────────────── */
+    .site-footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text3);
+      font-family: var(--font-ui);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+    }
+
+    /* ── RESPONSIVE ────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .hero-title { font-size: 2.2rem; }
+      .content { padding: 2rem 1.2rem 5rem; }
+      .oath-box { padding: 1.8rem 1.4rem; }
+      .plant-grid { grid-template-columns: 1fr; }
+      .psycho-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<canvas id="particles"></canvas>
+
+<div class="wrapper">
+
+  <!-- ══════════════ HERO ══════════════ -->
+  <section class="hero">
+    <svg class="hero-butterfly" viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="bwL" cx="40%" cy="40%">
+          <stop offset="0%" stop-color="#d4a0ff" stop-opacity="0.9"/>
+          <stop offset="60%" stop-color="#7c3fcc" stop-opacity="0.7"/>
+          <stop offset="100%" stop-color="#3d1a6a" stop-opacity="0.4"/>
+        </radialGradient>
+        <radialGradient id="bwR" cx="60%" cy="40%">
+          <stop offset="0%" stop-color="#4ecdc4" stop-opacity="0.8"/>
+          <stop offset="60%" stop-color="#2bb3aa" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#1a6060" stop-opacity="0.3"/>
+        </radialGradient>
+      </defs>
+      <!-- aile gauche haut -->
+      <path d="M 96 90 C 70 70, 20 30, 10 15 C 5 5, 30 2, 55 18 C 78 32, 90 65, 96 90 Z" fill="url(#bwL)" stroke="#b06eff" stroke-width="0.8" opacity="0.95"/>
+      <!-- aile gauche bas -->
+      <path d="M 96 90 C 75 105, 30 120, 18 140 C 10 155, 35 162, 60 148 C 82 135, 92 108, 96 90 Z" fill="url(#bwL)" stroke="#b06eff" stroke-width="0.8" opacity="0.75"/>
+      <!-- aile droite haut -->
+      <path d="M 104 90 C 130 70, 180 30, 190 15 C 195 5, 170 2, 145 18 C 122 32, 110 65, 104 90 Z" fill="url(#bwR)" stroke="#4ecdc4" stroke-width="0.8" opacity="0.95"/>
+      <!-- aile droite bas -->
+      <path d="M 104 90 C 125 105, 170 120, 182 140 C 190 155, 165 162, 140 148 C 118 135, 108 108, 104 90 Z" fill="url(#bwR)" stroke="#4ecdc4" stroke-width="0.8" opacity="0.75"/>
+      <!-- motifs aile gauche -->
+      <circle cx="55" cy="48" r="8" fill="rgba(255,255,255,0.08)" stroke="#d4a0ff" stroke-width="0.6"/>
+      <circle cx="38" cy="72" r="5" fill="rgba(255,255,255,0.06)" stroke="#b06eff" stroke-width="0.5"/>
+      <circle cx="55" cy="125" r="7" fill="rgba(255,255,255,0.07)" stroke="#d4a0ff" stroke-width="0.5"/>
+      <!-- motifs aile droite -->
+      <circle cx="145" cy="48" r="8" fill="rgba(255,255,255,0.08)" stroke="#4ecdc4" stroke-width="0.6"/>
+      <circle cx="162" cy="72" r="5" fill="rgba(255,255,255,0.06)" stroke="#2bb3aa" stroke-width="0.5"/>
+      <circle cx="145" cy="125" r="7" fill="rgba(255,255,255,0.07)" stroke="#4ecdc4" stroke-width="0.5"/>
+      <!-- corps -->
+      <ellipse cx="100" cy="90" rx="4" ry="28" fill="#1a0a2e" stroke="#b06eff" stroke-width="1"/>
+      <!-- antennes -->
+      <path d="M 98 63 C 88 45, 78 35, 72 28" stroke="#b06eff" stroke-width="1" fill="none"/>
+      <path d="M 102 63 C 112 45, 122 35, 128 28" stroke="#4ecdc4" stroke-width="1" fill="none"/>
+      <circle cx="72" cy="27" r="2.5" fill="#d4a0ff"/>
+      <circle cx="128" cy="27" r="2.5" fill="#4ecdc4"/>
+    </svg>
+
+    <p class="hero-jp">虫の呼吸</p>
+    <h1 class="hero-title">Souffle de l'Insecte</h1>
+    <p class="hero-sub">Hinoe · École des Lames Empoisonnées</p>
+    <div class="hero-divider"></div>
+    <blockquote class="hero-quote">
+      « L'insecte ne frappe pas avec la force — il frappe avec la précision.<br>
+      Une seule goutte suffit. Une seule égratignure décide du sort. »
+    </blockquote>
+    <p class="hero-scroll">↓ Parcourir le codex ↓</p>
+  </section>
+
+  <!-- ══════════════ NAV ══════════════ -->
+  <nav class="nav-sticky">
+    <div class="nav-inner">
+      <button class="nav-btn active" onclick="showSection('histoire')">Histoire</button>
+      <button class="nav-btn" onclick="showSection('reglement')">Règlement</button>
+      <button class="nav-btn" onclick="showSection('hierarchie')">Hiérarchie</button>
+      <button class="nav-btn" onclick="showSection('formes')">Formes du Souffle</button>
+      <button class="nav-btn" onclick="showSection('serment')">Serment</button>
+      <button class="nav-btn" onclick="showSection('plantes')">Plantes</button>
+      <button class="nav-btn" onclick="showSection('psychologie')">Psychologie</button>
+      <button class="nav-btn" onclick="showSection('soins')">Soins</button>
+    </div>
+  </nav>
+
+  <!-- ══════════════ CONTENT ══════════════ -->
+  <main class="content">
+
+    <!-- ── HISTOIRE ───────────────────────── -->
+    <div id="histoire" class="section active">
+      <h1 class="section-title"><span class="icon">🦋</span> Histoire de l'École</h1>
+      <p class="section-jp">歴史 — Rekishi</p>
+      <div class="section-divider"></div>
+
+      <p>L'École du Souffle de l'Insecte est l'une des disciplines les plus singulières parmi les arts martiaux des Chasseurs de Démons. Née de l'observation patiente du monde naturel, elle tire sa puissance non de la brutalité, mais du venin, de la finesse et de la connaissance intime du corps vivant.</p>
+
+      <div class="timeline">
+        <div class="timeline-item" data-dot="🌿">
+          <p class="timeline-era">Origines — L'Ère de la Fondation</p>
+          <p class="timeline-title">La Naissance du Souffle de l'Insecte</p>
+          <p class="timeline-text">La discipline est née de l'observation des insectes dans leurs milieux naturels — araignées tendant leurs toiles, guêpes paralysant leurs proies, papillons virevoltant entre les fleurs. Le fondateur comprit que la puissance absolue était inutile si elle était prévisible, et que le venin, invisible et patient, était la forme d'attaque la plus dévastatrice qui soit.</p>
+        </div>
+
+        <div class="timeline-item" data-dot="⚗️">
+          <p class="timeline-era">Développement — L'Ère du Savoir</p>
+          <p class="timeline-title">L'Alchimie du Combat</p>
+          <p class="timeline-text">Les maîtres successifs développèrent une connaissance poussée des substances naturelles — poisons, antidotes, anesthésiants, stimulants. Cette expertise botanique et médicale devint l'une des marques distinctives de l'école, donnant à ses membres un rôle unique à la fois de guerriers et de guérisseurs au sein du Corps des Chasseurs de Démons.</p>
+        </div>
+
+        <div class="timeline-item" data-dot="🦋">
+          <p class="timeline-era">Époque Actuelle — L'Ère d'Hinoe</p>
+          <p class="timeline-title">Hinoe, Gérant de l'École</p>
+          <p class="timeline-text">Hinoe hérita de la direction de l'école après des années d'apprentissage rigoureux. Elle réforma le système d'enseignement pour l'adapter aux nouvelles menaces démoniaques, renforça les protocoles médicaux et reconstruisit les liens de l'école avec les autres disciplines alliées. Sous son égide, le Souffle de l'Insecte connut un renouveau, attirant des disciples d'horizons variés.</p>
+        </div>
+
+        <div class="timeline-item" data-dot="📜">
+          <p class="timeline-era">Philosophie</p>
+          <p class="timeline-title">Les Principes Fondateurs</p>
+          <p class="timeline-text">Le Souffle de l'Insecte repose sur trois piliers philosophiques : <strong>la patience</strong> — attendre le moment juste ; <strong>la précision</strong> — frapper là où cela compte ; <strong>la connaissance</strong> — comprendre son ennemi mieux qu'il ne se connaît lui-même. Ces principes guident autant le combat que la médecine et la psychologie pratiquée au sein de l'école.</p>
+        </div>
+      </div>
+
+      <h2>Le Rôle de l'École dans le Corps</h2>
+      <p>L'École du Souffle de l'Insecte occupe une position unique au sein du Corps des Chasseurs de Démons. Ses membres sont à la fois des combattants aguerris et des experts médicaux, capables d'analyser les toxines démoniaques, de soigner les blessés et de préparer des préparations spéciales pour les missions difficiles.</p>
+
+      <div class="card">
+        <p class="card-title">Spécialités distinctives</p>
+        <p>
+          <span class="badge badge-purple">Combat au venin</span>
+          <span class="badge badge-teal">Médecine de terrain</span>
+          <span class="badge badge-gold">Botanique</span>
+          <span class="badge badge-purple">Analyse toxicologique</span>
+          <span class="badge badge-teal">Psychologie du combat</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- ── RÈGLEMENT ───────────────────────── -->
+    <div id="reglement" class="section">
+      <h1 class="section-title"><span class="icon">📜</span> Règlement de l'École</h1>
+      <p class="section-jp">規則 — Kisoku</p>
+      <div class="section-divider"></div>
+
+      <p>Le règlement du Souffle de l'Insecte est l'âme de l'école. Il ne s'agit pas d'une liste de contraintes, mais du reflet des valeurs qui définissent chaque membre. Toute violation est examinée par le conseil et sanctionnée proportionnellement.</p>
+
+      <h2>I. Règles Fondamentales</h2>
+      <ul class="rule-list">
+        <li data-icon="⚖️">Respecter en toute circonstance la hiérarchie de l'école. La parole d'Hinoe est définitive et sans appel.</li>
+        <li data-icon="🔐">Garder le secret absolu sur les préparations, antidotes et techniques de l'école. Aucune formule ne doit être partagée avec un non-membre.</li>
+        <li data-icon="⚔️">L'usage du Souffle et de tout poison contre un innocent est strictement interdit. Toute violation sera jugée comme une trahison.</li>
+        <li data-icon="🤝">La solidarité entre membres est obligatoire. Abandonner un camarade en danger est considéré comme la faute la plus grave.</li>
+        <li data-icon="📋">Tout membre doit pouvoir justifier ses actions en mission. Un rapport peut être exigé par tout officier.</li>
+        <li data-icon="🌿">Les ressources botaniques de l'école sont communes. Toute cueillette ou utilisation non autorisée du stock collectif doit être déclarée.</li>
+      </ul>
+
+      <h2>II. Code de Comportement</h2>
+      <ul class="rule-list">
+        <li data-icon="🧘">Maintenir son calme en toutes circonstances. Le Souffle de l'Insecte ne se pratique pas dans la colère.</li>
+        <li data-icon="🗡️">Le katana ne se dégaine jamais par provocation ou par jeu. La lame empoisonnée implique une responsabilité redoublée.</li>
+        <li data-icon="💊">Tout poison préparé doit être correctement étiqueté, stocké et déclaré à l'apothicaire de l'école.</li>
+        <li data-icon="🌐">Le respect envers les autres écoles alliées est obligatoire en toutes circonstances.</li>
+        <li data-icon="🎓">Chaque membre représente l'école. Son comportement en dehors des missions engage l'honneur du Souffle de l'Insecte.</li>
+      </ul>
+
+      <h2>III. Règles d'Entraînement</h2>
+      <ul class="rule-list">
+        <li data-icon="📅">La présence aux entraînements officiels est fortement recommandée. Les absences répétées sans justification valable peuvent entraîner un gel de progression.</li>
+        <li data-icon="🔢">L'apprentissage des Formes est strictement progressif. Aucune Forme ne peut être enseignée sans validation de la précédente par un officier.</li>
+        <li data-icon="🩺">Toute blessure, même légère, lors d'un entraînement impliquant des substances doit être signalée immédiatement au médecin de l'école.</li>
+        <li data-icon="🧪">La manipulation de poisons lors des entraînements est réservée aux membres ayant obtenu la certification botanique interne.</li>
+      </ul>
+
+      <h2>IV. Tableau des Sanctions</h2>
+
+      <div class="card">
+        <p class="card-title"><span class="badge badge-gold">Niveau 1 — Avertissement</span></p>
+        <p>Manque de respect mineur, négligence dans l'entretien du matériel, absence injustifiée. Sanction : rappel oral par un officier, note dans le dossier du membre.</p>
+      </div>
+      <div class="card">
+        <p class="card-title"><span class="badge badge-red">Niveau 2 — Suspension</span></p>
+        <p>Révélation partielle de technique, usage non autorisé du stock, conflit non résolu avec un autre membre. Sanction : suspension de 3 à 7 jours, gel de progression de rang.</p>
+      </div>
+      <div class="card">
+        <p class="card-title"><span class="badge badge-red">Niveau 3 — Dégradation</span></p>
+        <p>Violence injustifiée sur un civil ou un allié, sabotage d'une mission, falsification d'un rapport. Sanction : dégradation d'un rang + période de mise à l'épreuve de 14 jours.</p>
+      </div>
+      <div class="card">
+        <p class="card-title" style="color: var(--red)"><span class="badge badge-red">Niveau 4 — Exclusion Définitive</span></p>
+        <p>Trahison de l'école, transmission de secrets à un ennemi, utilisation du venin contre un membre. Sanction : exclusion immédiate et irrévocable, signalement à l'ensemble des écoles alliées.</p>
+      </div>
+    </div>
+
+    <!-- ── HIÉRARCHIE ──────────────────────── -->
+    <div id="hierarchie" class="section">
+      <h1 class="section-title"><span class="icon">🏛️</span> Hiérarchie de l'École</h1>
+      <p class="section-jp">階層 — Kaisō</p>
+      <div class="section-divider"></div>
+
+      <p>La hiérarchie du Souffle de l'Insecte est basée sur la maîtrise technique, la connaissance botanique et médicale, et l'investissement dans la communauté de l'école. Chaque rang confère des responsabilités et des accès supplémentaires.</p>
+
+      <table class="hiero-table">
+        <thead>
+          <tr>
+            <th>Rang</th>
+            <th>Titre</th>
+            <th>Conditions & Rôle</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="rank-num">I</td>
+            <td class="rank-title"><span class="badge badge-purple">Larve</span><br>Chenille des Premiers Pas</td>
+            <td class="rank-cond">Recrue fraîchement admise. Suit les cours fondamentaux et apprend les règles sous tutelle d'un membre de rang III ou plus.</td>
+          </tr>
+          <tr>
+            <td class="rank-num">II</td>
+            <td class="rank-title"><span class="badge badge-purple">Nymphe</span><br>Chrysalide en Devenir</td>
+            <td class="rank-cond">A validé les Formes 1 et 2 et obtenu sa certification botanique de base. Participe aux missions simples sous supervision.</td>
+          </tr>
+          <tr>
+            <td class="rank-num">III</td>
+            <td class="rank-title"><span class="badge badge-teal">Papillon Émergent</span><br>Lame Initiée</td>
+            <td class="rank-cond">A maîtrisé les Formes 1 à 3 et validé le module de soins de base. Peut effectuer des missions seul de niveau D et E. Commence à encadrer les Larves.</td>
+          </tr>
+          <tr>
+            <td class="rank-num">IV</td>
+            <td class="rank-title"><span class="badge badge-teal">Frelon d'Acier</span><br>Combattant Confirmé</td>
+            <td class="rank-cond">A maîtrisé les Formes 1 à 5. Officier de terrain. Autorisé à enseigner jusqu'à la Forme 3. Certifié en toxicologie intermédiaire.</td>
+          </tr>
+          <tr>
+            <td class="rank-num">V</td>
+            <td class="rank-title"><span class="badge badge-gold">Mante Souveraine</span><br>Sous-Officier Supérieur</td>
+            <td class="rank-cond">A maîtrisé toutes les Formes. Dirige des missions de groupe. Supervise les formations médicales et botaniques. Peut soumettre des candidatures au conseil.</td>
+          </tr>
+          <tr>
+            <td class="rank-num" style="color: var(--gold)">●</td>
+            <td class="rank-title"><span class="badge badge-gold">Abeille Reine</span><br>Pilier de l'Insecte</td>
+            <td class="rank-cond">Titre suprême de combattant. Niveau Pilier — maîtrise absolue du Souffle et de la pharmacopée de l'école. Nomination directe par Hinoe.</td>
+          </tr>
+          <tr>
+            <td class="rank-num" style="color: var(--accent3)">★</td>
+            <td class="rank-title" style="color: var(--accent3)">Hinoe — Gérant</td>
+            <td class="rank-cond">Maître absolu de l'école. Détentrice du savoir complet. Ses décisions sont définitives. Elle seule peut transmettre la Forme Secrète.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Progression de Rang</h2>
+      <p>La progression n'est pas automatique. Elle nécessite une demande formelle auprès d'un officier, une évaluation technique et une évaluation comportementale. Le conseil se réunit pour valider toute promotion au-delà du rang III.</p>
+
+      <ul class="rule-list warning">
+        <li data-icon="📝">Soumettre une demande de promotion écrite à un officier de rang V minimum.</li>
+        <li data-icon="⚔️">Réussir une épreuve pratique sur les Formes du niveau requis.</li>
+        <li data-icon="🌿">Passer l'évaluation botanique/médicale correspondante au rang visé.</li>
+        <li data-icon="🗣️">Être évalué positivement par au moins deux membres de rang supérieur.</li>
+      </ul>
+    </div>
+
+    <!-- ── FORMES ───────────────────────────── -->
+    <div id="formes" class="section">
+      <h1 class="section-title"><span class="icon">⚔️</span> Formes du Souffle</h1>
+      <p class="section-jp">虫の呼吸 · 型 — Kata</p>
+      <div class="section-divider"></div>
+
+      <p>Le Souffle de l'Insecte compte cinq formes officielles et une forme secrète, transmise uniquement de maître à disciple. Chaque forme est conçue pour délivrer un poison précis ou exploiter une faiblesse anatomique spécifique.</p>
+      <p style="font-size: 0.88rem; color: var(--text3); margin-bottom: 1.5rem;">Difficulté : ★ Initié  ·  ★★★ Intermédiaire  ·  ★★★★★ Maîtrise absolue</p>
+
+      <div class="forme-card">
+        <div class="forme-header">
+          <div class="forme-num">I</div>
+          <div class="forme-names">
+            <div class="forme-fr">Danse du Papillon — Kochō Mai</div>
+            <div class="forme-jp">蝶舞 — Kochō Mai</div>
+          </div>
+          <div class="forme-stars">★☆☆☆☆</div>
+        </div>
+        <div class="forme-body">Série de feintes légères en mouvement circulaire, imitant le vol erratique du papillon. L'utilisateur virevolte autour de l'adversaire pour trouver une ouverture, portant une série de petites estocades rapides sur des points précis du corps. Bien que chaque frappe soit légère, leur accumulation dépose un venin paralysant progressivement. C'est la forme fondatrice, enseignée à toutes les Larves et Nymphes.</div>
+      </div>
+
+      <div class="forme-card">
+        <div class="forme-header">
+          <div class="forme-num">II</div>
+          <div class="forme-names">
+            <div class="forme-fr">Piqûre du Frelon — Suzumebachi Sashi</div>
+            <div class="forme-jp">雀蜂刺 — Suzumebachi Sashi</div>
+          </div>
+          <div class="forme-stars">★★☆☆☆</div>
+        </div>
+        <div class="forme-body">Attaque directe en ligne droite à une vitesse supérieure à la normale, la pointe de la lame visant un nerf spécifique ou une veine principale. La rapidité d'exécution rend la frappe quasi invisible. L'impact libère un venin à action rapide capable de provoquer une paralysie locale en quelques secondes. Requiert une connaissance anatomique précise des cibles prioritaires.</div>
+      </div>
+
+      <div class="forme-card">
+        <div class="forme-header">
+          <div class="forme-num">III</div>
+          <div class="forme-names">
+            <div class="forme-fr">Toile de l'Araignée — Kumo no Ito</div>
+            <div class="forme-jp">蜘蛛の糸 — Kumo no Ito</div>
+          </div>
+          <div class="forme-stars">★★★☆☆</div>
+        </div>
+        <div class="forme-body">Technique défensive et offensive combinée. L'utilisateur trace une série de frappes courbes dans l'espace, créant une "zone de danger" autour de lui que l'ennemi ne peut traverser sans être touché. Chaque frappe effleure le corps adverse sur des zones à haute concentration nerveuse. L'effet de désorientation du venin utilisé dans cette forme altère la perception spatiale de l'adversaire.</div>
+      </div>
+
+      <div class="forme-card">
+        <div class="forme-header">
+          <div class="forme-num">IV</div>
+          <div class="forme-names">
+            <div class="forme-fr">Vol du Moustique — Ka no Tobō</div>
+            <div class="forme-jp">蚊の逃亡 — Ka no Tobō</div>
+          </div>
+          <div class="forme-stars">★★★★☆</div>
+        </div>
+        <div class="forme-body">Technique de mobilité extrême et de dissimulation. L'utilisateur se déplace avec une légèreté telle qu'il devient difficile à percevoir, glissant dans les angles morts de l'adversaire. Dans cet état de "quasi-invisibilité du mouvement", il peut placer des touches multiples sur des zones vitales sans jamais s'exposer. Requiert une maîtrise parfaite du souffle respiratoire pour masquer même le son de la respiration.</div>
+      </div>
+
+      <div class="forme-card">
+        <div class="forme-header">
+          <div class="forme-num">V</div>
+          <div class="forme-names">
+            <div class="forme-fr">Essaim Dévastateur — Mure no Ranbu</div>
+            <div class="forme-jp">群れの乱舞 — Mure no Ranbu</div>
+          </div>
+          <div class="forme-stars">★★★★★</div>
+        </div>
+        <div class="forme-body">La forme la plus puissante du répertoire officiel. L'utilisateur enchaîne une série de quarante-sept frappes en moins de deux secondes, couvrant l'ensemble du corps adverse. La technique utilise plusieurs venins différents appliqués en couches successives, chacun agissant à un moment différent pour maximiser l'effet dévastateur. Épuise considérablement les réserves physiques et de souffle de l'utilisateur. Réservée aux Frelons d'Acier et au-delà.</div>
+      </div>
+
+      <div class="forme-card" style="border-color: var(--gold2);">
+        <div class="forme-header" style="background: linear-gradient(135deg, rgba(160,100,0,0.3), rgba(30,18,50,0.9));">
+          <div class="forme-num" style="color: var(--gold)">✦</div>
+          <div class="forme-names">
+            <div class="forme-fr" style="color: var(--gold)">Forme Secrète — Venin de l'Éternité</div>
+            <div class="forme-jp">秘技 · 永遠の毒 — Higi : Eien no Doku</div>
+          </div>
+          <div class="forme-stars">✦✦✦✦✦</div>
+        </div>
+        <div class="forme-body">Transmise uniquement de maître à disciple digne du titre de Pilier. L'utilisateur atteint un état de conscience altérée dans lequel il perçoit l'entièreté du système nerveux de son adversaire comme une carte lumineuse. Une seule frappe, portée au point de convergence de ce réseau, déclenche une réaction en chaîne irrépressible. Le venin utilisé dans cette forme est unique — préparé sur plusieurs années et transmis avec la technique. Seule Hinoe peut l'enseigner.</div>
+      </div>
+    </div>
+
+    <!-- ── SERMENT ──────────────────────────── -->
+    <div id="serment" class="section">
+      <h1 class="section-title"><span class="icon">🌸</span> Serment d'Allégeance</h1>
+      <p class="section-jp">忠誠の誓い — Chūsei no Chikai</p>
+      <div class="section-divider"></div>
+
+      <p>Le Serment d'Allégeance est prononcé lors de l'admission officielle de tout nouveau membre, en présence d'Hinoe ou d'un officier délégué, devant l'ensemble des membres disponibles. Il n'est pas un simple rituel — il est l'engagement de l'âme.</p>
+
+      <div class="oath-box">
+        <p class="oath-title">⋆ Serment du Souffle de l'Insecte ⋆</p>
+        <p>
+          « En ce jour, devant mes pairs et devant ma gérant Hinoe,<br>
+          je m'engage à servir le Souffle de l'Insecte de tout mon être.<br><br>
+          Je jure de wielder ma lame et mon venin<br>
+          non par orgueil, ni par vengeance,<br>
+          mais pour protéger les innocents que les démons menacent.<br><br>
+          Je serai discret comme le moustique,<br>
+          précis comme le frelon,<br>
+          et patient comme l'araignée qui attend.<br><br>
+          Je soignerai ceux qui souffrent,<br>
+          je garderai les secrets qui me sont confiés,<br>
+          et j'honorerai mes frères et sœurs de l'école<br>
+          jusqu'à mon dernier souffle.<br><br>
+          Que le poison de la trahison ne coule jamais dans mes veines.<br>
+          Je suis du Souffle de l'Insecte. »
+        </p>
+      </div>
+
+      <h2>Protocole de Prestation de Serment</h2>
+      <ul class="rule-list">
+        <li data-icon="📍">Le candidat se place au centre de l'assemblée, agenouillé, katana posé devant lui, lame vers soi.</li>
+        <li data-icon="🗣️">Il prononce le serment à voix haute, clairement, sans interruption.</li>
+        <li data-icon="🌸">Hinoe ou l'officier délégué pose brièvement la main sur l'épaule du candidat en signe d'acceptation.</li>
+        <li data-icon="🗡️">Le nouveau membre se lève, reprend son katana et est accueilli par les présents.</li>
+        <li data-icon="📜">Une copie signée du serment est conservée dans les archives de l'école.</li>
+      </ul>
+
+      <h2>Rupture de Serment</h2>
+      <p>Toute trahison grave des engagements pris lors du serment est considérée comme un déshonneur absolu. Le membre concerné sera jugé devant le conseil en présence d'Hinoe. La rupture délibérée du serment entraîne l'exclusion définitive et l'effacement du nom des archives de l'école.</p>
+
+      <blockquote>
+        <p>« L'insecte qui trahit sa ruche est condamné à errer seul. La nature ne lui accorde aucune seconde chance. »<br>— Hinoe</p>
+      </blockquote>
+    </div>
+
+    <!-- ── PLANTES ──────────────────────────── -->
+    <div id="plantes" class="section">
+      <h1 class="section-title"><span class="icon">🌿</span> Guide des Plantes</h1>
+      <p class="section-jp">植物ガイド — Shokubutsu Gaido</p>
+      <div class="section-divider"></div>
+
+      <p>La connaissance des plantes est au cœur de la philosophie du Souffle de l'Insecte. Ce guide répertorie les espèces les plus importantes, curatives ou dangereuses. Tout membre de rang II et au-delà doit en maîtriser les bases. La manipulation des plantes nocives est réservée aux membres certifiés.</p>
+
+      <h2>🌱 Plantes Curatives</h2>
+      <div class="plant-grid">
+        <div class="plant-card heal">
+          <div class="plant-name">Armoise Sacrée</div>
+          <div class="plant-latin">Artemisia sacra</div>
+          <span class="badge badge-green">Curative</span>
+          <p class="plant-desc">Puissant anti-infectieux naturel. Les feuilles séchées et réduites en poudre accélèrent la cicatrisation des plaies de lame. Infusion efficace contre les fièvres démoniaques légères.</p>
+          <p class="plant-use">Usage : cataplasme, infusion · Dose max : 15g/jour</p>
+        </div>
+        <div class="plant-card heal">
+          <div class="plant-name">Chrysanthème de Montagne</div>
+          <div class="plant-latin">Chrysanthemum alpinum</div>
+          <span class="badge badge-green">Curative</span>
+          <p class="plant-desc">Propriétés anti-inflammatoires et analgésiques puissantes. Utilisé en cataplasme sur les blessures musculaires profondes et en décoction contre les douleurs nerveuses post-combat.</p>
+          <p class="plant-use">Usage : décoction, cataplasme · Récolte : automne</p>
+        </div>
+        <div class="plant-card heal">
+          <div class="plant-name">Gingembre des Forêts</div>
+          <div class="plant-latin">Asarum sylvaticum</div>
+          <span class="badge badge-green">Curative</span>
+          <p class="plant-desc">Stimulant circulatoire et antidote partiel contre certains venins de classe B. Mâché directement, il permet de ralentir la propagation d'un poison dans le flux sanguin le temps d'obtenir un antidote complet.</p>
+          <p class="plant-use">Usage : consommation directe, teinture · Urgent !</p>
+        </div>
+        <div class="plant-card heal">
+          <div class="plant-name">Lotus Bleu de Nuit</div>
+          <div class="plant-latin">Nymphaea nocturna</div>
+          <span class="badge badge-green">Curative</span>
+          <p class="plant-desc">Sédatif naturel doux, idéal pour les états de choc post-traumatique. L'extrait huileux apaise les brûlures chimiques superficielles. Pousse exclusivement près des points d'eau ombragés.</p>
+          <p class="plant-use">Usage : huile essentielle, infusion légère</p>
+        </div>
+        <div class="plant-card heal">
+          <div class="plant-name">Mousse de Cèdre Blanc</div>
+          <div class="plant-latin">Usnea albifera</div>
+          <span class="badge badge-green">Curative</span>
+          <p class="plant-desc">Antibiotique naturel puissant. Appliquée directement sur une plaie, elle prévient les infections bactériennes. Particulièrement efficace sur les morsures démoniaques de bas niveau contaminées.</p>
+          <p class="plant-use">Usage : application directe sur plaie fraîche</p>
+        </div>
+        <div class="plant-card heal">
+          <div class="plant-name">Pivoine de l'Aube</div>
+          <div class="plant-latin">Paeonia aurora</div>
+          <span class="badge badge-green">Curative</span>
+          <p class="plant-desc">Régénérateur des tissus endommagés par les acides démoniaques. La décoction de racine accélère la reconstruction cellulaire et atténue les cicatrices. Traitement de longue durée recommandé.</p>
+          <p class="plant-use">Usage : décoction de racine · Cure 7 jours</p>
+        </div>
+      </div>
+
+      <h2>☠️ Plantes Nocives & Venins</h2>
+      <p><span class="badge badge-red">Danger</span> La manipulation de ces plantes est réservée aux membres ayant obtenu la <strong>certification toxicologique</strong> de l'école (rang IV minimum ou formation validée).</p>
+
+      <div class="plant-grid">
+        <div class="plant-card harm">
+          <div class="plant-name">Aconit des Ombres</div>
+          <div class="plant-latin">Aconitum umbra</div>
+          <span class="badge badge-red">Toxique</span>
+          <p class="plant-desc">L'un des poisons les plus puissants du répertoire. Provoque une paralysie progressive des membres inférieurs avant d'atteindre le muscle cardiaque. Délai d'action : 8 à 15 minutes selon la dose.</p>
+          <p class="plant-use">⚠ Antidote : teinture de Gingembre des Forêts + charbon actif</p>
+        </div>
+        <div class="plant-card harm">
+          <div class="plant-name">Morelle Violette</div>
+          <div class="plant-latin">Solanum atro-violaceum</div>
+          <span class="badge badge-red">Toxique</span>
+          <p class="plant-desc">Provoque des hallucinations sévères et une désorientation spatiale. Utilisée en combat pour altérer la perception de l'ennemi. À doses élevées, peut induire un arrêt respiratoire.</p>
+          <p class="plant-use">⚠ Antidote : charbon actif + immobilisation immédiate</p>
+        </div>
+        <div class="plant-card harm">
+          <div class="plant-name">Champignon Spectre</div>
+          <div class="plant-latin">Fungi fantasma</div>
+          <span class="badge badge-red">Toxique</span>
+          <p class="plant-desc">Les spores inhalées provoquent une toux sèche progressive évoluant en détresse respiratoire en 30 minutes. Ne pousse que dans les zones humides à haute concentration démoniaque résiduelle.</p>
+          <p class="plant-use">⚠ Protection : masque de charbon en zone de récolte</p>
+        </div>
+        <div class="plant-card dual">
+          <div class="plant-name">Mandragore Nocturne</div>
+          <div class="plant-latin">Mandragora noctis</div>
+          <span class="badge badge-gold">Double usage</span>
+          <p class="plant-desc">À faible dose, puissant analgésique permettant de supporter des douleurs extrêmes. À dose élevée, paralysant total. La ligne entre soin et poison est ici très mince — dosage au milligramme requis.</p>
+          <p class="plant-use">Dose curative : 0.05g · Dose toxique : dès 0.2g</p>
+        </div>
+        <div class="plant-card dual">
+          <div class="plant-name">Digitale des Abysses</div>
+          <div class="plant-latin">Digitalis abyssorum</div>
+          <span class="badge badge-gold">Double usage</span>
+          <p class="plant-desc">Régulateur cardiaque naturel en infusion dilué — stabilise les cœurs fragilisés par le venin. En concentration pure, provoque une arythmie fatale. Exige une maîtrise parfaite de la préparation.</p>
+          <p class="plant-use">Préparation obligatoire par l'apothicaire de l'école</p>
+        </div>
+        <div class="plant-card harm">
+          <div class="plant-name">Orchidée Sombre</div>
+          <div class="plant-latin">Orchidea obscura</div>
+          <span class="badge badge-red">Neurotoxique</span>
+          <p class="plant-desc">Le pollen est un neurotoxique à action lente. Paralyse progressivement le système nerveux périphérique en 2 à 3 heures. Très difficile à détecter car inodore et invisible à l'œil nu.</p>
+          <p class="plant-use">⚠ Aucun antidote naturel connu — soins intensifs requis</p>
+        </div>
+      </div>
+
+      <h2>📦 Règles de Stockage</h2>
+      <ul class="rule-list warning">
+        <li data-icon="🏷️">Tout flacon ou contenant doit être étiqueté avec le nom de la plante, la date de préparation, le type (curatif/toxique) et les précautions.</li>
+        <li data-icon="🔒">Les plantes nocives et venins sont stockés dans l'armoire fermée à clé de l'apothicaire. Accès réservé aux membres certifiés.</li>
+        <li data-icon="🌡️">Les préparations liquides doivent être conservées à l'abri de la chaleur et de la lumière directe.</li>
+        <li data-icon="♻️">Toute préparation inutilisée après 30 jours doit être détruite selon le protocole de l'école.</li>
+      </ul>
+    </div>
+
+    <!-- ── PSYCHOLOGIE ──────────────────────── -->
+    <div id="psychologie" class="section">
+      <h1 class="section-title"><span class="icon">🧠</span> Guide de Psychologie</h1>
+      <p class="section-jp">心理ガイド — Shinri Gaido</p>
+      <div class="section-divider"></div>
+
+      <p>La psychologie est un pilier souvent négligé dans les arts martiaux. Au sein du Souffle de l'Insecte, comprendre l'esprit — le sien et celui de l'adversaire — est aussi important que maîtriser la lame. Ce guide aborde les aspects psychologiques du combat, du soin et de la vie en communauté.</p>
+
+      <h2>I. Psychologie du Combat</h2>
+
+      <div class="psycho-grid">
+        <div class="psycho-card">
+          <div class="psycho-icon">🎯</div>
+          <div class="psycho-name">La Lecture de l'Adversaire</div>
+          <p class="psycho-desc">Observer les micro-expressions, les postures et les habitudes de respiration de l'ennemi avant d'engager. Un adversaire crispé frappe fort mais prévisiblement. Un adversaire détendu est potentiellement plus dangereux.</p>
+        </div>
+        <div class="psycho-card">
+          <div class="psycho-icon">🌊</div>
+          <div class="psycho-name">L'État de Flux</div>
+          <p class="psycho-desc">Atteindre l'état dit "de flux" — la disparition de la frontière entre l'intention et l'action. Pratiqué régulièrement via la méditation et les katas lents, cet état permet une réactivité maximale sans effort conscient.</p>
+        </div>
+        <div class="psycho-card">
+          <div class="psycho-icon">😰</div>
+          <div class="psycho-name">Gestion de la Peur</div>
+          <p class="psycho-desc">La peur est une information, pas un ennemi. Elle signale le danger et accélère les réflexes. L'entraînement du Souffle de l'Insecte inclut des exercices d'exposition progressive pour transformer la peur en vigilance constructive.</p>
+        </div>
+        <div class="psycho-card">
+          <div class="psycho-icon">⚡</div>
+          <div class="psycho-name">La Pression Psychologique</div>
+          <p class="psycho-desc">Technique avancée : compromettre l'équilibre mental de l'adversaire avant même de frapper. Un ennemi incertain de votre position et de vos intentions est un ennemi à moitié vaincu.</p>
+        </div>
+        <div class="psycho-card">
+          <div class="psycho-icon">🧘</div>
+          <div class="psycho-name">La Neutralité Émotionnelle</div>
+          <p class="psycho-desc">Combattre ni dans la colère ni dans la peur, mais dans un état de neutralité active. Ni détachement froid ni passion aveugle — une présence totale, sans jugement, entièrement dédiée à l'action juste.</p>
+        </div>
+        <div class="psycho-card">
+          <div class="psycho-icon">🔄</div>
+          <div class="psycho-name">Récupération Post-Combat</div>
+          <p class="psycho-desc">Le combat laisse des traces psychologiques autant que physiques. Les rituels de retour au calme — respiration, narration des événements à un pair, journalisation — sont aussi importants que le soin des blessures physiques.</p>
+        </div>
+      </div>
+
+      <h2>II. Soutien Psychologique entre Membres</h2>
+      <p>Le Souffle de l'Insecte encourage une culture de soutien mutuel. Chaque membre de rang III et au-delà est formé aux bases de l'écoute active et de l'accompagnement psychologique de ses camarades.</p>
+
+      <div class="card">
+        <p class="card-title">Signaux d'alerte à identifier chez un camarade</p>
+        <p>Isolement soudain · Changements de comportement brusques · Irritabilité excessive · Troubles du sommeil mentionnés · Négligence de l'équipement · Prise de risques inhabituels en mission. Ces signaux doivent être rapportés discrètement à l'officier référent ou au médecin de l'école.</p>
+      </div>
+
+      <div class="card">
+        <p class="card-title">L'Écoute Active — Principes de Base</p>
+        <p>Présence physique totale sans interruption · Reformuler sans interpréter · Valider les émotions sans les minimiser · Ne pas proposer de solutions immédiatement · Maintenir la confidentialité absolue. L'oreille que tu tends aujourd'hui est celle que tu trouveras demain.</p>
+      </div>
+
+      <h2>III. Trauma et Résilience</h2>
+      <p>La vie de Chasseur de Démons expose à des expériences traumatisantes. L'école reconnaît ce fait et dispose d'un protocole d'accompagnement post-mission pour les situations difficiles.</p>
+      <ul class="rule-list">
+        <li data-icon="🛡️">Tout membre ayant vécu une mission traumatisante peut demander un entretien confidentiel avec l'officier référent ou le médecin dans les 48h suivant son retour.</li>
+        <li data-icon="⏸️">Un membre en état de détresse psychologique manifeste peut être temporairement exempté de missions sans que cela affecte son rang.</li>
+        <li data-icon="🔗">Les cercles de parole informels entre membres sont encouragés et peuvent se tenir régulièrement dans les locaux de l'école.</li>
+      </ul>
+    </div>
+
+    <!-- ── SOINS ────────────────────────────── -->
+    <div id="soins" class="section">
+      <h1 class="section-title"><span class="icon">💊</span> Guide de Soins</h1>
+      <p class="section-jp">治療ガイド — Chiryō Gaido</p>
+      <div class="section-divider"></div>
+
+      <p>Le Souffle de l'Insecte est l'une des rares écoles dont les membres sont formés aux soins médicaux. Cette section couvre les protocoles de premiers secours, les traitements spécifiques aux blessures démoniaques et les procédures d'urgence.</p>
+
+      <div class="card">
+        <p class="card-title">🚨 Rappel Prioritaire</p>
+        <p>En cas d'urgence vitale, stabiliser le blessé en priorité, appeler les membres compétents immédiatement, et ne jamais administrer de substance dont on n'est pas sûr. <strong>L'inaction vaut mieux qu'une action mal appliquée.</strong></p>
+      </div>
+
+      <h2>Protocoles par Type de Blessure</h2>
+
+      <div class="soin-bloc">
+        <div class="soin-head" onclick="toggleSoin(this)">
+          <span class="soin-head-icon">🩸</span>
+          <span class="soin-head-title">Plaies par Coupure — Lame et Griffe</span>
+          <span class="soin-toggle">▼</span>
+        </div>
+        <div class="soin-body">
+          <p><strong>Plaies superficielles (moins de 3cm, non profondes) :</strong></p>
+          <ul>
+            <li>Nettoyer abondamment à l'eau propre ou à la décoction d'armoise sacrée</li>
+            <li>Appliquer un cataplasme de mousse de cèdre blanc pour prévenir l'infection</li>
+            <li>Bander proprement, surveiller toutes les 4h pour signes d'infection (rougeur, chaleur, gonflement)</li>
+          </ul>
+          <p style="margin-top:0.8rem"><strong>Plaies profondes (saignement abondant, tissu visible) :</strong></p>
+          <ul>
+            <li>Compression directe immédiate — maintenir 10 minutes minimum</li>
+            <li>Surélever le membre si possible</li>
+            <li>Ne pas retirer un objet planté — fixer et transporter</li>
+            <li>Évacuation immédiate vers l'infirmerie de l'école</li>
+            <li>Suture réservée aux membres ayant suivi la formation chirurgie basique</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="soin-bloc">
+        <div class="soin-head" onclick="toggleSoin(this)">
+          <span class="soin-head-icon">☠️</span>
+          <span class="soin-head-title">Empoisonnement — Venin Démoniaque</span>
+          <span class="soin-toggle">▼</span>
+        </div>
+        <div class="soin-body">
+          <p><strong>Identification du venin (indispensable avant traitement) :</strong></p>
+          <ul>
+            <li>Venin paralysant : engourdissement progressif, peau bleutée autour de la plaie → antidote de classe A</li>
+            <li>Venin corrosif : brûlure intense, nécrose visible → rinçage abondant + neutralisant alcalin</li>
+            <li>Venin neurotoxique : confusion, hallucinations, pupilles dilatées → charbon actif + immobilisation</li>
+            <li>Venin hémolytique : pâleur, saignements inhabituels → transfusion si disponible, antidote classe C</li>
+          </ul>
+          <p style="margin-top:0.8rem"><strong>Procédure d'urgence universelle si venin non identifié :</strong></p>
+          <ul>
+            <li>Poser un garrot proximal à la plaie (ne pas dépasser 30 min)</li>
+            <li>Faire consommer immédiatement du gingembre des forêts mâché</li>
+            <li>Maintenir le blessé allongé, conscient si possible</li>
+            <li>Contacter immédiatement l'apothicaire ou un membre certifié</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="soin-bloc">
+        <div class="soin-head" onclick="toggleSoin(this)">
+          <span class="soin-head-icon">🦴</span>
+          <span class="soin-head-title">Fractures et Traumatismes Osseux</span>
+          <span class="soin-toggle">▼</span>
+        </div>
+        <div class="soin-body">
+          <p><strong>Fracture simple (os non visible, membre aligné) :</strong></p>
+          <ul>
+            <li>Immobilisation avec attelle de fortune (bois + bandage) — ne pas déplacer l'os</li>
+            <li>Appliquer décoction de chrysanthème de montagne en compresse froide pour réduire l'enflure</li>
+            <li>Évacuation vers l'infirmerie pour confirmation et plâtrage</li>
+          </ul>
+          <p style="margin-top:0.8rem"><strong>Fracture ouverte (os visible) :</strong></p>
+          <ul>
+            <li>Ne jamais tenter de remettre l'os en place</li>
+            <li>Couvrir la plaie avec un linge propre humidifié</li>
+            <li>Immobilisation totale et évacuation d'urgence en priorité absolue</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="soin-bloc">
+        <div class="soin-head" onclick="toggleSoin(this)">
+          <span class="soin-head-icon">🔥</span>
+          <span class="soin-head-title">Brûlures — Acide et Feu Démoniaque</span>
+          <span class="soin-toggle">▼</span>
+        </div>
+        <div class="soin-body">
+          <p><strong>Brûlures thermiques :</strong></p>
+          <ul>
+            <li>Rincer immédiatement à l'eau froide (15 minutes minimum)</li>
+            <li>Ne jamais percer les cloques ni appliquer de corps gras en phase aiguë</li>
+            <li>Huile de lotus bleu de nuit en fine couche après refroidissement complet</li>
+            <li>Brûlures au-delà du 2e degré : prise en charge médicale obligatoire</li>
+          </ul>
+          <p style="margin-top:0.8rem"><strong>Brûlures acide démoniaque :</strong></p>
+          <ul>
+            <li>Neutraliser avec solution bicarbonatée ou décoction alcaline de l'école</li>
+            <li>Ne jamais frotter — tamponner uniquement</li>
+            <li>Application de pivoine de l'aube en cataplasme après neutralisation</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="soin-bloc">
+        <div class="soin-head" onclick="toggleSoin(this)">
+          <span class="soin-head-icon">😵</span>
+          <span class="soin-head-title">État de Choc et Perte de Conscience</span>
+          <span class="soin-toggle">▼</span>
+        </div>
+        <div class="soin-body">
+          <p><strong>Identification du choc :</strong></p>
+          <ul>
+            <li>Pâleur, transpiration froide, pouls rapide et faible, confusion</li>
+            <li>Respiration rapide et superficielle, extrémités froides</li>
+          </ul>
+          <p style="margin-top:0.8rem"><strong>Protocole :</strong></p>
+          <ul>
+            <li>Allonger la personne, jambes surélevées (sauf blessure thoracique ou crânienne)</li>
+            <li>Couvrir pour maintenir la chaleur corporelle</li>
+            <li>Ne jamais donner à boire à une personne en état de choc</li>
+            <li>Parler calmement et maintenir le contact verbal jusqu'à l'arrivée des secours</li>
+            <li>Infusion légère de lotus bleu de nuit si personne consciente et stable</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="soin-bloc">
+        <div class="soin-head" onclick="toggleSoin(this)">
+          <span class="soin-head-icon">🧠</span>
+          <span class="soin-head-title">Traumatismes Crâniens</span>
+          <span class="soin-toggle">▼</span>
+        </div>
+        <div class="soin-body">
+          <p><strong>Signes d'alerte :</strong></p>
+          <ul>
+            <li>Perte de conscience même brève, confusion, amnésie de l'événement</li>
+            <li>Nausées, vomissements, mal de tête intense et croissant</li>
+            <li>Pupilles inégales, vision double, difficulté à maintenir l'équilibre</li>
+          </ul>
+          <p style="margin-top:0.8rem"><strong>Protocole :</strong></p>
+          <ul>
+            <li>Maintenir la personne éveillée et lui parler continuellement</li>
+            <li>Ne pas administrer d'analgésiques forts (masquent les symptômes)</li>
+            <li>Immobiliser la tête et le cou en cas de suspicion de traumatisme cervical</li>
+            <li>Tout traumatisme crânien, même léger, nécessite 24h d'observation minimale</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>Certifications Médicales de l'École</h2>
+      <table class="hiero-table">
+        <thead>
+          <tr><th>Niveau</th><th>Contenu</th><th>Rang requis</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge badge-green">Niveau 1</span></td>
+            <td class="rank-cond">Premiers secours de base — plaies, fractures, état de choc</td>
+            <td class="rank-cond">Rang I (obligatoire)</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-teal">Niveau 2</span></td>
+            <td class="rank-cond">Soins intermédiaires + botanique curative + identification des venins</td>
+            <td class="rank-cond">Rang II minimum</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-purple">Niveau 3</span></td>
+            <td class="rank-cond">Toxicologie avancée + préparation d'antidotes + suture basique</td>
+            <td class="rank-cond">Rang IV + validation officier</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-gold">Niveau 4</span></td>
+            <td class="rank-cond">Maîtrise complète — chirurgie de terrain + pharmacopée secrète de l'école</td>
+            <td class="rank-cond">Rang V + nomination d'Hinoe</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+
+  <!-- ══════════════ FOOTER ══════════════ -->
+  <footer class="site-footer">
+    <p>虫の呼吸 · Souffle de l'Insecte · Hinoe</p>
+    <p style="margin-top:0.4rem; color: rgba(140,112,176,0.5);">Document Officiel — Usage Interne · Confidentiel</p>
+  </footer>
+
+</div><!-- .wrapper -->
+
+<script>
+  // ── Navigation par onglets
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    const btns = document.querySelectorAll('.nav-btn');
+    btns.forEach(b => { if (b.getAttribute('onclick')?.includes(id)) b.classList.add('active'); });
+    window.scrollTo({ top: document.querySelector('.nav-sticky').offsetTop - 10, behavior: 'smooth' });
+  }
+
+  // ── Accordéons soins
+  function toggleSoin(header) {
+    const body = header.nextElementSibling;
+    const arrow = header.querySelector('.soin-toggle');
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open');
+    arrow.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+  }
+
+  // ── Particules flottantes
+  (function() {
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [];
+
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    class Particle {
+      constructor() { this.reset(true); }
+      reset(init) {
+        this.x  = Math.random() * W;
+        this.y  = init ? Math.random() * H : H + 10;
+        this.r  = Math.random() * 1.8 + 0.4;
+        this.vx = (Math.random() - 0.5) * 0.4;
+        this.vy = -(Math.random() * 0.6 + 0.15);
+        this.alpha = Math.random() * 0.5 + 0.1;
+        this.color = Math.random() > 0.5
+          ? `rgba(176,110,255,${this.alpha})`
+          : `rgba(78,205,196,${this.alpha})`;
+      }
+      update() {
+        this.x += this.vx; this.y += this.vy;
+        if (this.y < -10) this.reset(false);
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+    function animate() {
+      ctx.clearRect(0, 0, W, H);
+      particles.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(animate);
+    }
+    animate();
+  })();
+</script>
+</body>
+</html>
